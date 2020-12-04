@@ -31,31 +31,20 @@ const Input: React.FC<InputProps> = ({
         style={[
           styles.input,
           {
-            backgroundColor: theme.colors.secondaryBorder,
-            paddingHorizontal: theme.layout.md,
-            borderRadius: theme.radii.md,
-            borderWidth: theme.border.md,
-            color: theme.colors.primaryText,
-            fontFamily: theme.fonts.families.regular,
-            fontSize: theme.fonts.sizes.md,
+            backgroundColor: theme.colors.bgSecondary,
+            paddingHorizontal: theme.layout.s4,
+            paddingVertical: theme.layout.s4,
+            borderRadius: theme.radii.sm,
+            borderColor: theme.colors.uiBorder,
+            color: theme.colors.textPrimary,
+            fontFamily: theme.fonts.families.primary.semibold,
+            fontSize: theme.fonts.sizes.s2,
           },
-          error ? {borderColor: theme.colors.error} : null,
           style,
         ]}
-        placeholderTextColor={theme.colors.secondaryText}
+        placeholderTextColor={theme.colors.textSecondary}
         {...restProps}
       />
-      {error ? (
-        <Text
-          style={{
-            marginLeft: theme.layout.md + 2,
-            marginTop: theme.layout.xs,
-          }}
-          type="description"
-          colorType="error">
-          {error}
-        </Text>
-      ) : null}
     </View>
   );
 };
@@ -65,7 +54,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   input: {
-    height: 45,
     borderColor: `transparent`,
   },
 });

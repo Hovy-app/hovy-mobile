@@ -1,11 +1,9 @@
 import {useNavigation, CompositeNavigationProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
-import {OrderFiltersType} from '../../../Orders/reducer';
-
 export type ScannerScreenNavigationProp = CompositeNavigationProp<
   StackNavigationProp<{Scanner: {}}, 'Scanner'>,
-  StackNavigationProp<{SearchResults: {filters: OrderFiltersType}}>
+  StackNavigationProp<{Auth: {qrString: string}}>
 >;
 
 export type UseScannerNavigationType = {

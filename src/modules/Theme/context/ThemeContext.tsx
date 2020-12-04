@@ -1,5 +1,5 @@
 import React, {useState, useCallback} from 'react';
-import {defaultTheme, darkTheme, ThemeType} from '../../../utils/theme';
+import {defaultTheme, ThemeType} from '../../../utils/theme';
 
 export interface ThemeContextType {
   theme: ThemeType;
@@ -16,7 +16,7 @@ export const ThemeContext = React.createContext<ThemeContextType>({
 const ThemeContextProvider: React.FC = ({children}) => {
   const [theme, setTheme] = useState<ThemeType>(defaultTheme);
 
-  const updateTheme = useCallback((val: 'default' | 'dark'): void => {
+  const updateTheme = useCallback((): void => {
     setTheme(defaultTheme);
   }, []);
 

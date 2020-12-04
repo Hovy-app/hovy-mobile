@@ -47,9 +47,9 @@ export const useScannerBlock = (): UseScannerBlockType => {
   const handleScan = (e: BarCodeReadEvent): void => {
     try {
       if (isScanned) return;
-      const userId = onScan(e);
+      const qrString = onScan(e);
       ReactNativeHapticFeedback.trigger('notificationSuccess');
-      navigation.replace('SearchResults', {filters: {userId}});
+      navigation.replace('Auth', {qrString});
     } catch {
       if (!isError) ReactNativeHapticFeedback.trigger('notificationError');
     }

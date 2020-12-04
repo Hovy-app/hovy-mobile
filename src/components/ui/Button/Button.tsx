@@ -1,26 +1,23 @@
 import React from 'react';
 import {
+  View,
+  TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
   TouchableOpacityProps,
   StyleProp,
   TextStyle,
   GestureResponderEvent,
-  Pressable,
-  Platform,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 import {useTheme} from '../../../modules/Theme/hooks/useTheme';
 
 import Text from '../Text';
-import ShadowView from '../ShadowView';
 
 export interface ButtonProps extends TouchableOpacityProps {
   title?: string;
-  iconRight?: string;
-  type?: 'default' | 'clear';
+  iconLeft?: JSX.Element;
   isLoading?: boolean;
   titleStyle?: StyleProp<TextStyle>;
 }
@@ -28,8 +25,7 @@ export interface ButtonProps extends TouchableOpacityProps {
 const Button: React.FC<ButtonProps> = ({
   title,
   titleStyle,
-  iconRight,
-  type,
+  iconLeft,
   isLoading,
   disabled,
   onPress,
@@ -45,87 +41,47 @@ const Button: React.FC<ButtonProps> = ({
   };
 
   return (
-    <Pressable
-      style={({pressed}) => ({
-        opacity: Platform.OS === 'ios' && pressed ? 0.7 : 1,
-      })}
+    <TouchableOpacity
+      activeOpacity={0.7}
       disabled={disabled || isLoading}
       onPress={handlePress}
       {...restProps}>
-      <ShadowView
+      <View
         style={[
           styles.button,
-          ...(type === 'default'
-            ? disabled
-              ? [
-                  styles.buttonDefault,
-                  styles.buttonDefaultDisabled,
-                  {
-                    backgroundColor: theme.colors.primaryBorder,
-                    borderRadius: theme.radii.md,
-                  },
-                ]
-              : [
-                  styles.buttonDefault,
-                  {
-                    backgroundColor: theme.colors.primary,
-                    shadowColor: theme.colors.primary,
-                    borderRadius: theme.radii.md,
-                  },
-                ]
-            : [
-                styles.buttonClear,
-                {
-                  paddingVertical: theme.layout.xs,
-                  paddingHorizontal: theme.layout.sm,
-                },
-              ]),
+          styles.buttonDefault,
+          {
+            backgroundColor: disabled
+              ? theme.colors.uiDisabled
+              : theme.colors.uiPrimary,
+            borderRadius: theme.radii.sm,
+            paddingVertical: theme.layout.s4,
+          },
           style,
         ]}>
         {isLoading ? (
-          <ActivityIndicator
-            size="small"
-            color={
-              type === 'default' ? theme.colors.white : theme.colors.primary
-            }
-          />
+          <ActivityIndicator size="small" color={theme.colors.textInverse} />
         ) : (
           <>
+            {iconLeft && (
+              <View style={[styles.buttonIcon, {left: theme.layout.s4}]}>
+                {iconLeft}
+              </View>
+            )}
             <Text
               style={[
-                {color: theme.colors.white},
-                ...(type === 'clear'
-                  ? disabled
-                    ? [{color: theme.colors.secondaryText}]
-                    : [{color: theme.colors.primary}]
-                  : [null]),
+                {
+                  color: theme.colors.textInverse,
+                  fontFamily: theme.fonts.families.primary.semibold,
+                },
                 titleStyle,
-              ]}
-              type={type === 'clear' ? 'description' : 'primary'}>
+              ]}>
               {title}
             </Text>
-            {iconRight && (
-              <Icon
-                name={iconRight}
-                color={
-                  type === 'default'
-                    ? theme.colors.white
-                    : disabled
-                    ? theme.colors.secondaryText
-                    : theme.colors.primary
-                }
-                size={
-                  type === 'default'
-                    ? theme.fonts.sizes.lg
-                    : theme.fonts.sizes.md
-                }
-                style={{marginLeft: theme.layout.sm}}
-              />
-            )}
           </>
         )}
-      </ShadowView>
-    </Pressable>
+      </View>
+    </TouchableOpacity>
   );
 };
 
@@ -136,25 +92,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonDefault: {
-    width: 200,
-    height: 45,
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
+    width: '100%',
   },
-  buttonDefaultDisabled: {
-    shadowOpacity: 0,
-  },
-  buttonClear: {
-    backgroundColor: `transparent`,
+  buttonIcon: {
+    position: 'absolute',
   },
 });
-
-Button.defaultProps = {
-  type: 'default',
-};
 
 export default Button;

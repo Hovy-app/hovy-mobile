@@ -20,7 +20,7 @@ const PageContainer: React.FC<PageContainerProps> = ({
       style={[
         styles.pageContainer,
         isCentered && styles.centeredContent,
-        {paddingHorizontal: theme.layout.md},
+        {paddingHorizontal: theme.layout.s5},
         style,
       ]}
       {...restProps}>

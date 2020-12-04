@@ -5,28 +5,27 @@ import {
   StackHeaderProps,
   StackNavigationOptions,
 } from '@react-navigation/stack';
-import {
-  BottomTabBar,
-  BottomTabBarOptions,
-  BottomTabBarProps,
-  BottomTabNavigationOptions,
-} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Feather';
 
-import Text from '../components/ui/Text';
 import ShadowView from '../components/ui/ShadowView';
-import {UserDataType} from '../modules/Auth/reducer';
 import {ThemeType} from './theme';
 
-type GenerateHeaderOptions = {
+import LogoSvg from '../assets/images/Logo.svg';
+import CloseIconSvg from '../assets/images/icons/close.svg';
+import BackIconSvg from '../assets/images/icons/back.svg';
+
+export type GenerateCommonHeaderOptionsType = {
   shadowOpacity: number;
   transparent?: boolean;
+  closeIconShown?: boolean;
+  onCloseIconPress?: () => void;
+  logoShown?: boolean;
+  isSecondaryBg?: boolean;
 };
 
 export const generateCommonHeader = (
   theme: ThemeType,
-  title = 'Title',
-  options?: GenerateHeaderOptions
+  options?: GenerateCommonHeaderOptionsType
 ): StackNavigationOptions => {
   const styles = StyleSheet.create({
     shadowContainer: {
@@ -43,16 +42,13 @@ export const generateCommonHeader = (
       elevation: 0,
       shadowOpacity: 0,
     },
-    headerLeftContainer: {
-      marginLeft: 0,
-    },
-    headerRightContainer: {
-      marginRight: 10,
-    },
     backButton: {
       marginLeft: Platform.OS === 'ios' ? 2 : -8,
       paddingHorizontal: 10,
       paddingVertical: 5,
+    },
+    logo: {
+      marginBottom: -2,
     },
   });
 
@@ -66,34 +62,59 @@ export const generateCommonHeader = (
     },
     headerStyle: [
       styles.header,
-      {backgroundColor: options?.transparent ? `transparent` : theme.colors.bg},
+      {
+        backgroundColor: options?.transparent
+          ? `transparent`
+          : options?.isSecondaryBg
+          ? theme.colors.bgSecondary
+          : theme.colors.bgPrimary,
+      },
     ],
     headerTitle() {
-      return title ? (
-        <Text
-          style={{
-            color: options?.transparent
-              ? theme.colors.white
-              : theme.colors.primaryText,
-          }}>
-          {title}
-        </Text>
-      ) : undefined;
+      return options?.logoShown ? (
+        <LogoSvg
+          height={22}
+          width={54}
+          fill={theme.colors.textPrimary}
+          style={styles.logo}
+        />
+      ) : null;
+    },
+    headerRight() {
+      if (options?.closeIconShown)
+        return (
+          <TouchableOpacity
+            onPress={options.onCloseIconPress}
+            style={{
+              paddingHorizontal: theme.layout.s3,
+              paddingVertical: theme.layout.s1,
+            }}>
+            <CloseIconSvg
+              height={theme.fonts.sizes.s3}
+              width={theme.fonts.sizes.s3}
+              fill={theme.colors.textPrimary}
+            />
+          </TouchableOpacity>
+        );
+      return null;
     },
     headerTitleAlign: 'center',
-    headerLeftContainerStyle: styles.headerLeftContainer,
-    headerRightContainerStyle: styles.headerRightContainer,
+    headerLeftContainerStyle: {marginLeft: theme.layout.s4},
+    headerRightContainerStyle: {marginRight: theme.layout.s5 - theme.layout.s3},
     headerBackImage() {
       return (
-        <View style={styles.backButton}>
-          <Icon
-            name="chevron-left"
-            size={26}
-            color={
-              options?.transparent
-                ? theme.colors.white
-                : theme.colors.primaryText
-            }
+        <View
+          style={[
+            styles.backButton,
+            {
+              paddingHorizontal: theme.layout.s3,
+              paddingVertical: theme.layout.s1,
+            },
+          ]}>
+          <BackIconSvg
+            height={theme.fonts.sizes.s3}
+            width={theme.fonts.sizes.s3}
+            fill={theme.colors.textPrimary}
           />
         </View>
       );
@@ -105,181 +126,23 @@ export const generateCommonHeader = (
   return headerOptions;
 };
 
-export const generateHeaderWithUser = (
-  theme: ThemeType,
-  userData: UserDataType | null,
-  logout?: () => Promise<void>
-): StackNavigationOptions => {
-  const styles = StyleSheet.create({
-    headerLeftInnerContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginLeft: 20,
-    },
-    userCircle: {
-      borderRadius: 20,
-      marginRight: 10,
-      height: '100%',
-      maxHeight: 30,
-      aspectRatio: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    rightButton: {
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-    },
-  });
-
-  const headerOptions: StackNavigationOptions = {
-    headerTitle: '',
-    headerLeft() {
-      return (
-        <View style={styles.headerLeftInnerContainer}>
-          <View
-            style={[
-              styles.userCircle,
-              {backgroundColor: theme.colors.secondaryBorder},
-            ]}>
-            <Icon name="user" size={16} color={theme.colors.primaryText} />
-          </View>
-          <Text>
-            {userData
-              ? `${userData.name[0].toUpperCase()}. ${userData.lastName}`
-              : 'Manager'}
-          </Text>
-        </View>
-      );
-    },
-    headerRight() {
-      return (
-        <TouchableOpacity style={styles.rightButton} onPress={logout}>
-          <Icon name="log-out" size={20} color={theme.colors.primaryText} />
-        </TouchableOpacity>
-      );
-    },
-  };
-
-  return headerOptions;
-};
-
-export const generateCommonTabHeader = (
-  theme: ThemeType,
-  title?: string,
-  iconName?: string
-): StackNavigationOptions => {
-  const styles = StyleSheet.create({
-    headerLeftInnerContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginLeft: 20,
-    },
-  });
-
-  const headerOptions: StackNavigationOptions = {
-    headerTitle: '',
-    headerLeft() {
-      return (
-        <View style={styles.headerLeftInnerContainer}>
-          {iconName && (
-            <Icon
-              name={iconName}
-              size={20}
-              color={theme.colors.primaryText}
-              style={{marginRight: theme.layout.sm}}
-            />
-          )}
-          {title && <Text>{title}</Text>}
-        </View>
-      );
-    },
-  };
-
-  return headerOptions;
-};
-
-export const renderShadowTabBar = (props: BottomTabBarProps): JSX.Element => {
-  const styles = StyleSheet.create({
-    shadowContainer: {
-      shadowColor: `#000000`,
-      shadowOffset: {
-        width: 0,
-        height: 0,
-      },
-      shadowOpacity: 0.1,
-      shadowRadius: 15,
-    },
-  });
-
-  return (
-    <ShadowView style={styles.shadowContainer}>
-      <BottomTabBar {...props} />
-    </ShadowView>
-  );
-};
-
-export const generateTabBarOptions = (
-  theme: ThemeType
-): BottomTabBarOptions => {
-  const styles = StyleSheet.create({
-    tabBar: {
-      ...(Platform.OS === 'android' ? {height: 55} : {}),
-      paddingTop: 5,
-      borderTopWidth: 0,
-      elevation: 0,
-      shadowOpacity: 0,
-    },
-    tabLabel: {
-      marginBottom: Platform.OS !== 'ios' ? 7 : 2,
-    },
-  });
-
-  const tabBarOptions = {
-    style: [styles.tabBar, {backgroundColor: theme.colors.bg}],
-    adaptive: Platform.OS !== 'ios' ? false : true,
-    activeTintColor: theme.colors.primaryText,
-    inactiveTintColor: theme.colors.secondaryText,
-    labelStyle: [
-      styles.tabLabel,
-      {
-        fontFamily: theme.fonts.families.regular,
-        fontSize: theme.fonts.sizes.xs,
-      },
-    ],
-  };
-
-  return tabBarOptions;
+export type GenerateStackScreenOptionsType = {
+  headerShown?: boolean;
+  isSecondaryBg?: boolean;
 };
 
 export const generateStackScreenOptions = (
   theme: ThemeType,
-  headerShown = false
+  options?: GenerateStackScreenOptionsType
 ): StackNavigationOptions => {
   const stackScreenOptions: StackNavigationOptions = {
-    cardStyle: {backgroundColor: theme.colors.bg},
-    headerShown,
+    cardStyle: {
+      backgroundColor: options?.isSecondaryBg
+        ? theme.colors.bgSecondary
+        : theme.colors.bgPrimary,
+    },
+    headerShown: options?.headerShown ?? false,
   };
 
   return stackScreenOptions;
-};
-
-export const generateTabScreenOptions = (
-  theme: ThemeType,
-  title = 'Tab',
-  iconName = 'home'
-): BottomTabNavigationOptions => {
-  const tabScreenOptions: BottomTabNavigationOptions = {
-    title,
-    tabBarIcon({focused, size}) {
-      return (
-        <Icon
-          name={iconName}
-          color={focused ? theme.colors.primary : theme.colors.secondaryText}
-          size={size - 1}
-        />
-      );
-    },
-  };
-
-  return tabScreenOptions;
 };

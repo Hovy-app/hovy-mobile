@@ -1,32 +1,32 @@
 import {useState} from 'react';
 import {BarCodeReadEvent} from 'react-native-camera';
 
-export type UserQRDataType = {
-  userId: number;
+export type QRDataType = {
+  qrString: string;
 };
 
-export const isValidUserQR = (data: unknown): data is UserQRDataType => {
-  if ((data as UserQRDataType).userId) return true;
+export const isValidQR = (data: unknown): data is QRDataType => {
+  if ((data as QRDataType).qrString) return true;
   return false;
 };
 
 export type UseScannerType = {
   isScanned: boolean;
   isError: boolean;
-  onScan: (e: BarCodeReadEvent) => number;
+  onScan: (e: BarCodeReadEvent) => string;
 };
 
 export const useScanner = (): UseScannerType => {
   const [isScanned, setIsScanned] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
 
-  const onScan = (e: BarCodeReadEvent): number => {
+  const onScan = (e: BarCodeReadEvent): string => {
     try {
       const data = JSON.parse(e.data);
-      if (!isValidUserQR(data)) throw new Error();
+      if (!isValidQR(data)) throw new Error();
       setIsError(false);
       setIsScanned(true);
-      return data.userId;
+      return data.qrString;
     } catch (err) {
       setIsError(true);
       throw err;
