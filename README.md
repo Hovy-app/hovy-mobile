@@ -1,6 +1,6 @@
 # HOVY mobile app
 
-There is our mobile app files.__
+There is our mobile app files. <br />
 The app was written with React Native.
 
 ## Platforms support
