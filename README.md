@@ -4,7 +4,7 @@ There is our mobile app files. <br />
 The app was written with React Native.
 
 ## Platforms support
-Android ([Download APK](https://a4.files.diawi.com/app-file/IoI7duH2jNKUffGLamz2.apk))
+Android ([Download APK](https://a4.files.diawi.com/app-file/IoI7duH2jNKUffGLamz2.apk)) <br />
 IOS (contact anton.bludov@gmail.com)
 
 ## After installing our app you can scan this demo QR-codes:
