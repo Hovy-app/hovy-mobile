@@ -12,15 +12,11 @@ import Button from '../../../components/ui/Button';
 import Text from '../../../components/ui/Text';
 import CompanyCard from '../../../components/ui/CompanyCard';
 import MenuButton from '../../../components/common/MenuButton';
-import HeartIconSvg from '../../../assets/images/icons/heart.svg';
-import SmileFaceIconSvg from '../../../assets/images/icons/smile-face.svg';
-import NeutralFaceIconSvg from '../../../assets/images/icons/neutral-face.svg';
-import SadFaceIconSvg from '../../../assets/images/icons/sad-face.svg';
 import {useTheme} from '../../Theme/hooks/useTheme';
 import {RootState} from '../../../redux/store';
 import {ShopDataType} from '../../Auth/reducer/authReducer';
 
-const FeedbackAfterFirstScreen: React.FC = () => {
+const FeedbackLeaveFirstScreen: React.FC = () => {
   const {theme} = useTheme();
   const navigation = useNavigation();
 
@@ -47,7 +43,7 @@ const FeedbackAfterFirstScreen: React.FC = () => {
             <Text
               type="title"
               style={{textAlign: 'center', marginBottom: theme.layout.s2}}>
-              Thanks for your visit!
+              Sorry to see you go
             </Text>
             <Text
               style={{
@@ -55,51 +51,55 @@ const FeedbackAfterFirstScreen: React.FC = () => {
                 textAlign: 'center',
                 marginBottom: theme.layout.s5,
               }}>
-              Please rate your experience.
+              Why did you decide to leave the venue?
             </Text>
             <Button
-              title="Love it"
-              iconLeft={<HeartIconSvg fill={theme.colors.textInverse} />}
+              title="Queue is too long"
               style={{marginBottom: theme.layout.s3}}
               onPress={() =>
                 navigation.reset({
                   index: 0,
-                  routes: [{name: 'FeedbackAfterSecond', params: {rating: 4}}],
+                  routes: [{name: 'FeedbackLeaveSecond', params: {reason: 1}}],
                 })
               }
             />
             <Button
-              title="Good"
-              iconLeft={<SmileFaceIconSvg fill={theme.colors.textInverse} />}
+              title="Too much time to wait"
               style={{marginBottom: theme.layout.s3}}
               onPress={() =>
                 navigation.reset({
                   index: 0,
-                  routes: [{name: 'FeedbackAfterSecond', params: {rating: 3}}],
+                  routes: [{name: 'FeedbackLeaveSecond', params: {reason: 2}}],
                 })
               }
             />
             <Button
-              title="Normal"
-              iconLeft={<NeutralFaceIconSvg fill={theme.colors.textInverse} />}
+              title="Wrong venue"
               style={{marginBottom: theme.layout.s3}}
               onPress={() =>
                 navigation.reset({
                   index: 0,
-                  routes: [{name: 'FeedbackAfterSecond', params: {rating: 2}}],
+                  routes: [{name: 'FeedbackLeaveSecond', params: {reason: 3}}],
                 })
               }
             />
             <Button
-              title="Bad"
-              iconLeft={<SadFaceIconSvg fill={theme.colors.textInverse} />}
-              style={{marginBottom: theme.layout.s3}}
+              title="Personal reason"
+              style={{marginBottom: theme.layout.s5}}
               onPress={() =>
                 navigation.reset({
                   index: 0,
-                  routes: [{name: 'FeedbackAfterSecond', params: {rating: 1}}],
+                  routes: [{name: 'FeedbackLeaveSecond', params: {reason: 4}}],
                 })
               }
+            />
+            <Button
+              title="Nevermind, I’m staying"
+              style={{
+                backgroundColor: theme.colors.uiBorder,
+              }}
+              titleStyle={{color: theme.colors.textPrimary}}
+              onPress={() => navigation.goBack()}
             />
           </View>
         </PageContainer>
@@ -109,4 +109,4 @@ const FeedbackAfterFirstScreen: React.FC = () => {
   );
 };
 
-export default FeedbackAfterFirstScreen;
+export default FeedbackLeaveFirstScreen;

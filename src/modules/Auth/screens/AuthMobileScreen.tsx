@@ -65,7 +65,9 @@ const AuthMobileScreen: React.FC = () => {
             <Button
               title="Continue"
               disabled={!phoneValue}
-              onPress={() => navigation.navigate('AuthMobileCode')}
+              onPress={() =>
+                navigation.navigate('AuthMobileCode', {phoneNumber: phoneValue})
+              }
             />
           </View>
         </PageContainer>

@@ -6,6 +6,9 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 import {useScannerNavigation} from '../useScannerNavigation';
 import {useScanner} from '../useScanner/useScanner';
+import {useDispatchRequest} from '@redux-requests/react';
+import {setQrPlaceId} from '../../reducer/scannerReducer';
+import {setShopData} from '../../../Auth/reducer/authReducer';
 
 export type UserQRDataType = {
   userId: number;
@@ -20,21 +23,23 @@ export type UseScannerBlockType = {
   isScanned: boolean;
   isError: boolean;
   canShowCamera: boolean;
-  handleScan: (e: BarCodeReadEvent) => void;
+  handleScan: (e: BarCodeReadEvent) => Promise<void>;
 };
 
 export const useScannerBlock = (): UseScannerBlockType => {
   const {isScanned, isError, onScan} = useScanner();
   useKeepAwake();
   const {navigation} = useScannerNavigation();
+  const dispatch = useDispatchRequest();
 
   const [canShowCamera, setCanShowCamera] = useState<boolean>(false);
 
   useEffect(() => {
+    dispatch(setShopData(null));
     setTimeout(() => {
       setCanShowCamera(true);
     }, 500);
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     ScreenOrientation.lockToPortrait();
@@ -44,12 +49,13 @@ export const useScannerBlock = (): UseScannerBlockType => {
     };
   });
 
-  const handleScan = (e: BarCodeReadEvent): void => {
+  const handleScan = async (e: BarCodeReadEvent): Promise<void> => {
     try {
       if (isScanned) return;
-      const qrString = onScan(e);
+      const qrPlaceId = onScan(e);
+      await dispatch(setQrPlaceId(qrPlaceId));
       ReactNativeHapticFeedback.trigger('notificationSuccess');
-      navigation.replace('Auth', {qrString});
+      navigation.replace('Auth');
     } catch {
       if (!isError) ReactNativeHapticFeedback.trigger('notificationError');
     }

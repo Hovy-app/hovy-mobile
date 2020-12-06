@@ -1,6 +1,5 @@
 export const config = {
   api: {
-    url: 'https://dev.cs.factor.ua',
-    token: 'BPsibN2DIAsRCLMeavYrd9eb76FLfr',
+    url: 'http://145.14.28.154:8085',
   },
 };

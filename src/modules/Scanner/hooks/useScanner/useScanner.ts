@@ -2,11 +2,11 @@ import {useState} from 'react';
 import {BarCodeReadEvent} from 'react-native-camera';
 
 export type QRDataType = {
-  qrString: string;
+  placeId: string;
 };
 
 export const isValidQR = (data: unknown): data is QRDataType => {
-  if ((data as QRDataType).qrString) return true;
+  if ((data as QRDataType).placeId) return true;
   return false;
 };
 
@@ -26,7 +26,7 @@ export const useScanner = (): UseScannerType => {
       if (!isValidQR(data)) throw new Error();
       setIsError(false);
       setIsScanned(true);
-      return data.qrString;
+      return data.placeId;
     } catch (err) {
       setIsError(true);
       throw err;

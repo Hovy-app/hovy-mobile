@@ -5,7 +5,6 @@ import {
   StackHeaderProps,
   StackNavigationOptions,
 } from '@react-navigation/stack';
-import Icon from 'react-native-vector-icons/Feather';
 
 import ShadowView from '../components/ui/ShadowView';
 import {ThemeType} from './theme';

@@ -1,26 +1,24 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {generateApiAction} from '../../../utils/requestUtils';
 
-export type UserDataType = {
+export type ShopServiceType = {
+  index: number;
+  name: string;
+};
+
+export type ShopDataType = {
   id: number;
   name: string;
-  lastName: string;
-  patronymic: string;
-  login: string;
-  email: string;
-  phone: number;
-  address: string | null;
-  description: string | null;
-  token: string;
-  createDate: string;
+  address: string;
+  pictureUrl: string;
+  services: ShopServiceType[];
 };
 
 type InitialStateType = {
-  userData: UserDataType | null;
+  shopData: ShopDataType | null;
 };
 
 const initialState: InitialStateType = {
-  userData: null,
+  shopData: null,
   // accessToken: null,
   // refreshToken: null,
 };
@@ -29,22 +27,16 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    login: {
+    getShopData: {
       reducer() {
-        /** REDUCER */
+        /* NULL */
       },
-      prepare(login: string, password: string) {
-        const data = generateApiAction('Myqr', 'Manager', 'loginManager');
-
-        data.append('login', login);
-        data.append('password', password);
-
+      prepare(qrPlaceId: string) {
         return {
           payload: {
             request: {
-              url: '/api.php',
-              method: 'POST',
-              data,
+              url: `/shopInfo/${qrPlaceId}`,
+              method: 'GET',
             },
           },
           meta: {
@@ -53,17 +45,37 @@ const authSlice = createSlice({
         };
       },
     },
-    setUserData: {
-      reducer(state, action: PayloadAction<{userData: UserDataType | null}>) {
-        const {userData} = action.payload;
+    setShopData: {
+      reducer(state, action: PayloadAction<{shopData: ShopDataType | null}>) {
+        const {shopData} = action.payload;
 
-        state.userData = userData;
+        state.shopData = shopData;
       },
-      prepare(userData: UserDataType | null) {
+      prepare(shopData: ShopDataType | null) {
         return {
           payload: {
             request: null,
-            userData,
+            shopData,
+          },
+        };
+      },
+    },
+    authMobileId: {
+      reducer() {
+        /* NULL */
+      },
+      prepare(phone: string, qrPlaceId: string) {
+        const secureString = 38211150129;
+
+        return {
+          payload: {
+            request: {
+              url: `/scan/${secureString}/${phone}/${qrPlaceId}`,
+              method: 'GET',
+            },
+          },
+          meta: {
+            driver: 'default',
           },
         };
       },
@@ -71,6 +83,6 @@ const authSlice = createSlice({
   },
 });
 
-export const {login, setUserData} = authSlice.actions;
+export const {getShopData, setShopData, authMobileId} = authSlice.actions;
 
 export default authSlice.reducer;

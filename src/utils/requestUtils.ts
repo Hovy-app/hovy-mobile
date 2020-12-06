@@ -7,7 +7,6 @@ export const generateApiAction = (
   action?: string
 ): FormData => {
   const formData = new FormData();
-  formData.append('token', config.api.token);
   formData.append('method', method);
   if (action) {
     formData.append('action', action);

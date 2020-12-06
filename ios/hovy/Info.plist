@@ -40,7 +40,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>HOVY requires to access camera for scanning QR-codes.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string></string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>OpenSans-Bold.ttf</string>

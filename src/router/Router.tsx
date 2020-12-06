@@ -14,6 +14,8 @@ import {QueueScreen} from '../modules/Queue/screens';
 import {
   FeedbackAfterFirstScreen,
   FeedbackAfterSecondScreen,
+  FeedbackLeaveFirstScreen,
+  FeedbackLeaveSecondScreen,
 } from '../modules/Feedback/screens';
 
 import {
@@ -125,6 +127,34 @@ const Router: React.FC = () => {
       <MainStack.Screen
         name="FeedbackAfterSecond"
         component={FeedbackAfterSecondScreen}
+        options={({navigation}) => ({
+          ...generateStackScreenOptions(theme, {
+            headerShown: true,
+          }),
+          ...generateCommonHeader(theme, {
+            shadowOpacity: opacity ?? 0,
+            logoShown: true,
+            onCloseIconPress: openScannerScreenGenerator(navigation),
+          }),
+        })}
+      />
+      <MainStack.Screen
+        name="FeedbackLeaveFirst"
+        component={FeedbackLeaveFirstScreen}
+        options={({navigation}) => ({
+          ...generateStackScreenOptions(theme, {
+            headerShown: true,
+          }),
+          ...generateCommonHeader(theme, {
+            shadowOpacity: opacity ?? 0,
+            logoShown: true,
+            onCloseIconPress: openScannerScreenGenerator(navigation),
+          }),
+        })}
+      />
+      <MainStack.Screen
+        name="FeedbackLeaveSecond"
+        component={FeedbackLeaveSecondScreen}
         options={({navigation}) => ({
           ...generateStackScreenOptions(theme, {
             headerShown: true,

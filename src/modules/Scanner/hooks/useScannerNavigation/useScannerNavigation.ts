@@ -3,7 +3,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 
 export type ScannerScreenNavigationProp = CompositeNavigationProp<
   StackNavigationProp<{Scanner: {}}, 'Scanner'>,
-  StackNavigationProp<{Auth: {qrString: string}}>
+  StackNavigationProp<{Auth: undefined}>
 >;
 
 export type UseScannerNavigationType = {

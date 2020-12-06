@@ -1,15 +1,17 @@
 import {combineReducers} from '@reduxjs/toolkit';
 
 import authReducer from '../modules/Auth/reducer';
-import eventsReducer from '../modules/Events/reducer';
-import ordersReducer from '../modules/Orders/reducer';
+import scannerReducer from '../modules/Scanner/reducer';
+import queueReducer from '../modules/Queue/reducer';
+import feedbackReducer from '../modules/Feedback/reducer';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const rootReducer = (additionalReducers = {}) => {
   return combineReducers({
     authReducer,
-    eventsReducer,
-    ordersReducer,
+    scannerReducer,
+    queueReducer,
+    feedbackReducer,
     ...additionalReducers,
   });
 };

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
+import {useSelector} from 'react-redux';
 
-import {View, SafeAreaView} from 'react-native';
+import {View, SafeAreaView, ActivityIndicator} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import CheckBox from '@react-native-community/checkbox';
 
@@ -15,42 +16,112 @@ import QueueCard from '../../../components/ui/QueueCard';
 import SmartIDIconSvg from '../../../assets/images/icons/smart-id.svg';
 import MobileIDIconSvg from '../../../assets/images/icons/mobile-id.svg';
 import {useTheme} from '../../Theme/hooks/useTheme';
+import {RootState} from '../../../redux/store';
+import {ShopDataType} from '../../Auth/reducer/authReducer';
+import {
+  enterQueue,
+  setQueueData,
+  getQueueStatus,
+  updateQueueData,
+  QueueDataType,
+} from '../reducer/queueReducer';
+import {useDispatchRequest} from '@redux-requests/react';
 
 const AuthMobileScreen: React.FC = () => {
   const {theme} = useTheme();
   const navigation = useNavigation();
+  const dispatch = useDispatchRequest();
 
   const [type, setType] = useState<'default' | 'attention' | 'process'>(
     'default'
   );
-  const [peopleCount, setPeopleCount] = useState(5);
-  const [queueNumber] = useState(Math.floor(Math.random() * (999 - 101)) + 101);
-  const [sendChecked, setSendChecked] = useState(false);
-  const [receiveChecked, setReceiveChecked] = useState(false);
+  const [checkedList, setCheckedList] = useState<Set<number>>(new Set());
+  const [isCancelled, setIsCancelled] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const shopData = useSelector<RootState, ShopDataType | null>(
+    (state) => state.authReducer.shopData
+  );
+  const queueData = useSelector<RootState, QueueDataType | null>(
+    (state) => state.queueReducer.queueData
+  );
 
   useEffect(() => {
-    const inter = setInterval(() => {
-      setPeopleCount((old) => {
-        if (old === 1) {
-          setType('attention');
-          clearInterval(inter);
-          return old;
-        }
-        return old - 1;
+    return () => {
+      setIsCancelled(true);
+      dispatch(setQueueData(null));
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    let int: NodeJS.Timeout | null = null;
+    if (shopData && type !== 'attention' && !isCancelled)
+      dispatch(enterQueue(shopData.id)).then(({data}) => {
+        dispatch(
+          setQueueData({
+            myQueueNumber: data.queueNumber,
+            currentQueueNumber: data.current,
+            peopleLeft: data.peopleLeft,
+          })
+        );
+        int = setInterval(() => {
+          if (!isCancelled)
+            dispatch(getQueueStatus(shopData.id, data.queueNumber)).then(
+              ({data: updData}) => {
+                if (type !== 'process' && !isCancelled)
+                  dispatch(
+                    setQueueData({
+                      myQueueNumber: data.queueNumber,
+                      currentQueueNumber: updData.current,
+                      peopleLeft: updData.peopleLeft,
+                    })
+                  );
+              }
+            );
+        }, 2000);
       });
-    }, 3000);
 
     return () => {
-      clearInterval(inter);
+      if (int) clearInterval(int);
     };
-  }, []);
+  }, [shopData, dispatch, type, isCancelled]);
+
+  const check = (id: number): void => {
+    setCheckedList((prev) => {
+      const prevCopy = new Set(prev);
+      if (prev.has(id)) prevCopy.delete(id);
+      else prevCopy.add(id);
+      return prevCopy;
+    });
+  };
 
   useEffect(() => {
-    if (type === 'attention') {
+    if (queueData && queueData.myQueueNumber === queueData.currentQueueNumber) {
+      setType('attention');
       setTimeout(() => {
         setType('process');
-      }, 6000);
+      }, 5000);
     }
+  }, [queueData]);
+
+  // useEffect(() => {
+  //   const inter = setInterval(() => {
+  //     setPeopleCount((old) => {
+  //       if (old === 1) {
+  //         setType('attention');
+  //         clearInterval(inter);
+  //         return old;
+  //       }
+  //       return old - 1;
+  //     });
+  //   }, 3000);
+
+  //   return () => {
+  //     clearInterval(inter);
+  //   };
+  // }, []);
+
+  useEffect(() => {
     if (type === 'process') {
       setTimeout(() => {
         navigation.reset({
@@ -66,138 +137,149 @@ const AuthMobileScreen: React.FC = () => {
       <SafeScrollerContainer isFlex>
         <PageContainer>
           <View style={{paddingTop: theme.layout.s4}}>
-            <View
-              style={{
-                alignSelf: 'center',
-                backgroundColor:
-                  (peopleCount <= 3 && type === 'default') ||
-                  type === 'attention'
-                    ? theme.colors.uiYellow
-                    : theme.colors.bgSecondary,
-                paddingVertical: theme.layout.s3,
-                paddingHorizontal: theme.layout.s4,
-                borderRadius: 100,
-                marginBottom: theme.layout.s4,
-              }}>
-              <Text>
-                {type === 'default'
-                  ? peopleCount <= 3
-                    ? `${peopleCount} people in front of you.`
-                    : 'We’ll notify you when it’s your turn.'
-                  : type === 'attention'
-                  ? `It's your turn (${queueNumber})`
-                  : 'In-Progress...'}
-              </Text>
-            </View>
-            <QueueCard
-              type={type}
-              label={
-                type === 'default'
-                  ? 'Your number is'
-                  : type === 'attention'
-                  ? 'Come to desk number'
-                  : ' '
-              }
-              title="Arsenali Postkontor"
-              address="Erika 14, 10416 Tallinn"
-              pictureUrl="https://meetfrank.com/blog/wp-content/uploads/2019/11/omniva.png"
-              style={{marginBottom: theme.layout.s5}}
-              queueNumber={
-                type === 'default'
-                  ? queueNumber
-                  : type === 'attention'
-                  ? 5
-                  : '📦'
-              }
-            />
-            {type !== 'process' ? (
+            {shopData && !isError && (
               <>
-                {type === 'default' ? (
+                {queueData ? (
                   <>
-                    <Button
-                      title="Receive package"
+                    <View
                       style={{
-                        marginBottom: theme.layout.s3,
-                        backgroundColor: theme.colors.uiBorder,
-                      }}
-                      iconLeft={
-                        <CheckBox
-                          onTintColor={theme.colors.textPrimary}
-                          onCheckColor={theme.colors.textPrimary}
-                          style={{
-                            width: 20,
-                            height: 20,
-                          }}
-                          value={receiveChecked}
-                        />
+                        alignSelf: 'center',
+                        backgroundColor:
+                          (queueData.peopleLeft <= 5 && type === 'default') ||
+                          type === 'attention'
+                            ? theme.colors.uiYellow
+                            : theme.colors.bgSecondary,
+                        paddingVertical: theme.layout.s3,
+                        paddingHorizontal: theme.layout.s4,
+                        borderRadius: 100,
+                        marginBottom: theme.layout.s4,
+                      }}>
+                      <Text>
+                        {type === 'default'
+                          ? queueData.peopleLeft <= 5
+                            ? `${queueData.peopleLeft} people in front of you.`
+                            : 'We’ll notify you when it’s your turn.'
+                          : type === 'attention'
+                          ? `It's your turn (${queueData.myQueueNumber})`
+                          : 'In-Progress...'}
+                      </Text>
+                    </View>
+                    <QueueCard
+                      type={type}
+                      label={
+                        type === 'default'
+                          ? 'Your number is'
+                          : type === 'attention'
+                          ? 'Come to desk number'
+                          : ' '
                       }
-                      titleStyle={{color: theme.colors.textPrimary}}
-                      onPress={setReceiveChecked.bind(null, !receiveChecked)}
+                      title={shopData.name}
+                      address={shopData.address}
+                      pictureUrl={shopData.pictureUrl}
+                      style={{marginBottom: theme.layout.s5}}
+                      queueNumber={
+                        type === 'default'
+                          ? queueData.myQueueNumber
+                          : type === 'attention'
+                          ? 5
+                          : '📦'
+                      }
                     />
+                  </>
+                ) : (
+                  <ActivityIndicator
+                    size="large"
+                    style={{marginBottom: theme.layout.s5}}
+                  />
+                )}
+                {type !== 'process' ? (
+                  <>
+                    {type === 'default' ? (
+                      <>
+                        {shopData.services.map(({index, name}) => (
+                          <Button
+                            key={name}
+                            title={name}
+                            style={{
+                              marginBottom: theme.layout.s3,
+                              backgroundColor: theme.colors.uiBorder,
+                            }}
+                            iconLeft={
+                              <CheckBox
+                                onTintColor={theme.colors.textPrimary}
+                                onCheckColor={theme.colors.textPrimary}
+                                style={{
+                                  width: 20,
+                                  height: 20,
+                                }}
+                                value={checkedList.has(index)}
+                              />
+                            }
+                            titleStyle={{color: theme.colors.textPrimary}}
+                            onPress={check.bind(null, index)}
+                          />
+                        ))}
+                      </>
+                    ) : null}
                     <Button
-                      title="Send package"
+                      title="Leave the venue"
                       style={{
-                        marginBottom: theme.layout.s3,
-                        backgroundColor: theme.colors.uiBorder,
+                        marginBottom: theme.layout.s5,
+                        backgroundColor: theme.colors.uiError,
                       }}
-                      iconLeft={
-                        <CheckBox
-                          onTintColor={theme.colors.textPrimary}
-                          onCheckColor={theme.colors.textPrimary}
-                          style={{
-                            width: 20,
-                            height: 20,
-                          }}
-                          value={sendChecked}
-                        />
-                      }
                       titleStyle={{color: theme.colors.textPrimary}}
-                      onPress={setSendChecked.bind(null, !sendChecked)}
+                      onPress={() => {
+                        navigation.navigate('FeedbackLeaveFirst');
+                      }}
                     />
                   </>
                 ) : null}
-                <Button
-                  title="Leave the venue"
+                {/* <Text
                   style={{
-                    marginBottom: theme.layout.s5,
-                    backgroundColor: theme.colors.uiError,
-                  }}
-                  titleStyle={{color: theme.colors.textPrimary}}
-                />
+                    fontFamily: theme.fonts.families.primary.semibold,
+                    color: theme.colors.uiGrey,
+                    marginBottom: theme.layout.s3,
+                  }}>
+                  2 packages found
+                </Text>
+                <View
+                  style={{
+                    padding: theme.layout.s4,
+                    backgroundColor: theme.colors.bgSecondary,
+                    borderRadius: theme.radii.sm,
+                    marginBottom: theme.layout.s3,
+                  }}>
+                  <Text
+                    style={{fontFamily: theme.fonts.families.primary.semibold}}>
+                    CC961667511EE
+                  </Text>
+                  <Text type="description">China, 22-11-2020, 17:50</Text>
+                </View>
+                <View
+                  style={{
+                    padding: theme.layout.s4,
+                    backgroundColor: theme.colors.bgSecondary,
+                    borderRadius: theme.radii.sm,
+                    marginBottom: theme.layout.s3,
+                  }}>
+                  <Text
+                    style={{fontFamily: theme.fonts.families.primary.semibold}}>
+                    CC961667512EE
+                  </Text>
+                  <Text type="description">Netherlands, 21-11-2020, 13:30</Text>
+                </View> */}
               </>
-            ) : null}
-            <Text
-              style={{
-                fontFamily: theme.fonts.families.primary.semibold,
-                color: theme.colors.uiGrey,
-                marginBottom: theme.layout.s3,
-              }}>
-              2 packages found
-            </Text>
-            <View
-              style={{
-                padding: theme.layout.s4,
-                backgroundColor: theme.colors.bgSecondary,
-                borderRadius: theme.radii.sm,
-                marginBottom: theme.layout.s3,
-              }}>
-              <Text style={{fontFamily: theme.fonts.families.primary.semibold}}>
-                CC961667511EE
-              </Text>
-              <Text type="description">China, 22-11-2020, 17:50</Text>
-            </View>
-            <View
-              style={{
-                padding: theme.layout.s4,
-                backgroundColor: theme.colors.bgSecondary,
-                borderRadius: theme.radii.sm,
-                marginBottom: theme.layout.s3,
-              }}>
-              <Text style={{fontFamily: theme.fonts.families.primary.semibold}}>
-                CC961667512EE
-              </Text>
-              <Text type="description">Netherlands, 21-11-2020, 13:30</Text>
-            </View>
+            )}
+            {isError && (
+              <View
+                style={{
+                  backgroundColor: theme.colors.uiError,
+                  padding: theme.layout.s4,
+                  borderRadius: theme.radii.sm,
+                }}>
+                <Text colorType="error">Error loading data.</Text>
+              </View>
+            )}
           </View>
         </PageContainer>
       </SafeScrollerContainer>

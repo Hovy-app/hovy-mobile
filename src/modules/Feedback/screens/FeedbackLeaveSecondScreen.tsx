@@ -13,21 +13,24 @@ import Text from '../../../components/ui/Text';
 import Input from '../../../components/ui/Input';
 import CompanyCard from '../../../components/ui/CompanyCard';
 import MenuButton from '../../../components/common/MenuButton';
-import HeartIconSvg from '../../../assets/images/icons/heart_filled.svg';
-import SmileFaceIconSvg from '../../../assets/images/icons/smile-face_filled.svg';
-import NeutralFaceIconSvg from '../../../assets/images/icons/neutral-face_filled.svg';
-import SadFaceIconSvg from '../../../assets/images/icons/sad-face_filled.svg';
 import {useTheme} from '../../Theme/hooks/useTheme';
 import {RootState} from '../../../redux/store';
 import {ShopDataType} from '../../Auth/reducer/authReducer';
 import {sendFeedback} from '../reducer/feedbackReducer';
 import {useDispatchRequest} from '@redux-requests/react';
 
-const FeedbackAfterSecondScreen: React.FC = () => {
+const reasons: ('LONG_QUEUE' | 'LONG_WAIT' | 'WRONG_PLACE' | 'PERSONAL')[] = [
+  'LONG_QUEUE',
+  'LONG_WAIT',
+  'WRONG_PLACE',
+  'PERSONAL',
+];
+
+const FeedbackLeaveSecondScreen: React.FC = () => {
   const {theme} = useTheme();
   const navigation = useNavigation();
   const dispatch = useDispatchRequest();
-  const route = useRoute<Route<'FeedbackAfterSecond', {rating: number}>>();
+  const route = useRoute<Route<'FeedbackAfterSecond', {reason: number}>>();
 
   const [comment, setComment] = useState('');
   const [isError, setIsError] = useState(false);
@@ -46,7 +49,7 @@ const FeedbackAfterSecondScreen: React.FC = () => {
         const res = await dispatch(
           sendFeedback({
             shopId: shopData.id,
-            rate: route.params.rating,
+            reasonType: reasons[route.params.reason],
             comment,
           })
         );
@@ -80,7 +83,7 @@ const FeedbackAfterSecondScreen: React.FC = () => {
             <Text
               type="title"
               style={{textAlign: 'center', marginBottom: theme.layout.s2}}>
-              Thanks for your visit!
+              Sorry to see you go
             </Text>
             <Text
               style={{
@@ -88,43 +91,40 @@ const FeedbackAfterSecondScreen: React.FC = () => {
                 textAlign: 'center',
                 marginBottom: theme.layout.s5,
               }}>
-              Please rate your experience.
+              Why did you decide to leave the venue?
             </Text>
             <View style={{alignItems: 'center', marginBottom: theme.layout.s5}}>
-              {route.params?.rating === 4 ? (
+              {route.params?.reason === 4 ? (
                 <View
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
                   }}>
-                  <HeartIconSvg style={{marginRight: theme.layout.s3}} />
                   <Text
                     style={{fontFamily: theme.fonts.families.primary.semibold}}>
-                    Love it
+                    Personal reason
                   </Text>
                 </View>
-              ) : route.params?.rating === 3 ? (
+              ) : route.params?.reason === 3 ? (
                 <View
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
                   }}>
-                  <SmileFaceIconSvg style={{marginRight: theme.layout.s3}} />
                   <Text
                     style={{fontFamily: theme.fonts.families.primary.semibold}}>
-                    Good
+                    Wrong venue
                   </Text>
                 </View>
-              ) : route.params?.rating === 2 ? (
+              ) : route.params?.reason === 2 ? (
                 <View
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
                   }}>
-                  <NeutralFaceIconSvg style={{marginRight: theme.layout.s3}} />
                   <Text
                     style={{fontFamily: theme.fonts.families.primary.semibold}}>
-                    Normal
+                    Too much time to wait
                   </Text>
                 </View>
               ) : (
@@ -133,10 +133,9 @@ const FeedbackAfterSecondScreen: React.FC = () => {
                     flexDirection: 'row',
                     alignItems: 'center',
                   }}>
-                  <SadFaceIconSvg style={{marginRight: theme.layout.s3}} />
                   <Text
                     style={{fontFamily: theme.fonts.families.primary.semibold}}>
-                    Bad
+                    Queue is too long
                   </Text>
                 </View>
               )}
@@ -172,4 +171,4 @@ const FeedbackAfterSecondScreen: React.FC = () => {
   );
 };
 
-export default FeedbackAfterSecondScreen;
+export default FeedbackLeaveSecondScreen;
