@@ -6,24 +6,16 @@ export const onApiRequest = (
   requestAction: unknown,
   store: Store
 ): AxiosRequestConfig => {
-  const managerToken = store.getState().authReducer?.userData?.token;
-  const managerId = store.getState().authReducer?.userData?.id;
-
   if (__DEV__)
     console.log('[API] Request to API...', JSON.stringify(requestAction));
 
-  if (managerToken) {
-    return {
-      ...request,
-      headers: {
-        ...request.headers,
-        Authorization: managerToken,
-        Managerid: managerId,
-      },
-    };
-  }
-
-  return request;
+  return {
+    ...request,
+    headers: {
+      ...request.headers,
+      'Content-Type': 'application/json',
+    },
+  };
 };
 
 export const onApiError = (err: AxiosError): AxiosError => {
