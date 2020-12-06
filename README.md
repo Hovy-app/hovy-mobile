@@ -12,3 +12,7 @@ IOS (contact *anton.bludov@gmail.com* to get TestFlight access)
 
 ![QR-code 1](https://i.postimg.cc/WbDjLmtJ/qr1.png)
 ![QR-code 2](https://i.postimg.cc/d0FKyz68/qr2.png)
+
+## How to test it with your phone
+
+Register your phone number certificates at this site: https://demo.sk.ee/MIDCertsReg/, taking both steps (1 and 2). This allows the demo environment to be accessed by your phone.
