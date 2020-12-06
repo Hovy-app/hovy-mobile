@@ -18,6 +18,7 @@ const AuthMobileScreen: React.FC = () => {
   const navigation = useNavigation();
 
   const [phoneValue, setPhoneValue] = useState('');
+  const [userIsi, setUserIsi] = useState('');
 
   const onPhoneInput = (val: string): void => {
     const newVal = val
@@ -62,11 +63,21 @@ const AuthMobileScreen: React.FC = () => {
               value={phoneValue}
               style={{marginBottom: theme.layout.s3}}
             />
+            <Input
+              placeholder="Personal code"
+              onChangeText={(val: string) => setUserIsi(val)}
+              keyboardType="number-pad"
+              value={userIsi}
+              style={{marginBottom: theme.layout.s3}}
+            />
             <Button
               title="Continue"
               disabled={!phoneValue}
               onPress={() =>
-                navigation.navigate('AuthMobileCode', {phoneNumber: phoneValue})
+                navigation.navigate('AuthMobileCode', {
+                  phoneNumber: phoneValue,
+                  userIsi,
+                })
               }
             />
           </View>

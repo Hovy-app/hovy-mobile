@@ -64,13 +64,11 @@ const authSlice = createSlice({
       reducer() {
         /* NULL */
       },
-      prepare(phone: string, qrPlaceId: string) {
-        const secureString = 38211150129;
-
+      prepare(phone: string, userIsi: string, qrPlaceId: string) {
         return {
           payload: {
             request: {
-              url: `/scan/${secureString}/${phone}/${qrPlaceId}`,
+              url: `/scan/${userIsi}/${phone}/${qrPlaceId}`,
               method: 'GET',
             },
           },

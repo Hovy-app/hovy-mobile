@@ -18,7 +18,9 @@ import {RootState} from '../../../redux/store';
 const AuthMobileCodeScreen: React.FC = () => {
   const {theme} = useTheme();
   const navigation = useNavigation();
-  const route = useRoute<Route<'AuthMobileCode', {phoneNumber: string}>>();
+  const route = useRoute<
+    Route<'AuthMobileCode', {phoneNumber: string; userIsi: string}>
+  >();
   const dispatch = useDispatchRequest();
 
   const [isError, setIsError] = useState(false);
@@ -29,13 +31,15 @@ const AuthMobileCodeScreen: React.FC = () => {
 
   useEffect(() => {
     if (route.params.phoneNumber && qrPlaceId)
-      dispatch(authMobileId(route.params.phoneNumber, qrPlaceId))
+      dispatch(
+        authMobileId(route.params.phoneNumber, route.params.userIsi, qrPlaceId)
+      )
         .then(({error}) => {
           if (error) setIsError(true);
           else navigation.reset({index: 0, routes: [{name: 'Queue'}]});
         })
         .catch(() => setIsError(true));
-  }, [dispatch, route.params.phoneNumber, qrPlaceId, navigation]);
+  }, [dispatch, route.params, qrPlaceId, navigation]);
 
   return (
     <KeyboardAvoidingContainer>
