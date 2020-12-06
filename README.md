@@ -1,9 +1,9 @@
 # HOVY mobile app
 
-There is our mobile app files.
+There is our mobile app files.__
 The app was written with React Native.
 
-## We have two platforms support:
+## Platforms support
 Android ([Download APK](https://a4.files.diawi.com/app-file/IoI7duH2jNKUffGLamz2.apk))
 IOS (contact anton.bludov@gmail.com)
 
