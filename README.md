@@ -5,7 +5,7 @@ The app was written with React Native.
 
 ## Platforms support
 
-**Android** ([Download APK](https://a3.files.diawi.com/app-file/THo4j3267NPSi1h2LbyB.apk)) <br />
+**Android** ([Download APK](https://a3.files.diawi.com/app-file/eMInOPKZnbCQppkvRpmb.apk)) <br />
 **IOS** (contact anton.bludov@gmail.com to get TestFlight access)
 
 ## After installing our app you can scan this demo QR-codes
