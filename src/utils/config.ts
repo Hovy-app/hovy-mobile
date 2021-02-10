@@ -1,5 +1,5 @@
 export const config = {
   api: {
-    url: 'http://145.14.28.154:8085',
+    url: 'http://178.62.182.178:8085',
   },
 };
