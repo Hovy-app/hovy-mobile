@@ -6,7 +6,7 @@ The app was written with React Native.
 ## Platforms support
 
 **Android** ([Download APK](https://kurovskyi.dev/projects/hovy/hovy.apk)) <br />
-**IOS** (contact anton.bludov@gmail.com to get TestFlight access)
+**IOS** ([Install via TestFlight](https://testflight.apple.com/join/8eBFIGRD))
 
 ## After installing our app you can scan this demo QR-codes
 
