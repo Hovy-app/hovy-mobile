@@ -11,10 +11,5 @@ The app was written with React Native.
 ## After installing our app you can scan this demo QR-codes
 
 ![QR-code 1](https://i.postimg.cc/WbDjLmtJ/qr1.png)
-![QR-code 2](https://i.postimg.cc/d0FKyz68/qr2.png)
 
-**❗️ Please enter phone number without any spaces (e.g. +37212345678)**
-
-## How to test it with your phone
-
-Register your phone number certificates at this site: https://demo.sk.ee/MIDCertsReg/, taking both steps (1 and 2). This allows the demo environment to be accessed by your phone.
+**❗️ Please enter phone number without any spaces (e.g. +37212345678). Our app imitates the working of Mobile ID technology on the "Proof of Concept" stage.**
