@@ -54,7 +54,7 @@ const AuthMobileScreen: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    let int: NodeJS.Timeout | null = null;
+    let int: number | null = null;
     if (shopData && type !== 'attention' && !isCancelled)
       dispatch(enterQueue(shopData.id)).then(({data}) => {
         dispatch(
